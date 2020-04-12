@@ -61,14 +61,52 @@ class Container {
 
         $actualDirectory = $baseDir . substr($actualDirectory, strpos($actualDirectory, '/')+1);
 
-        print("<pre>".print_r($actualDirectory, true)."</pre>");
+        //print("<pre>".print_r($actualDirectory, true)."</pre>");
 
         $files = array_filter(scandir($actualDirectory), function ($file) {
             return $file !== '.' && $file !== '..';
         });
 
-        print("<pre>".print_r($files, true)."</pre><br>");
+        //print("<pre>".print_r($files, true)."</pre><br>");
 
+        foreach ($files as $file) {
+            $class = new \ReflectionClass(
+                $namespace . '\\' . basename($file, '.php')
+            );
+            $serviceName = $class->getName();
+            //print("<pre>Service: ".print_r($serviceName, true)."</pre><br>");
+
+            $constructor = $class->getConstructor();
+            $arguments = $constructor->getParameters();
+
+            // parameters to inject into service constructor
+            $serviceParameters = [];
+
+            foreach ($arguments as $argument) {
+                $type = (string)$argument->getType();
+                //print("<pre>Argument: ".print_r($type, true)."</pre><br>");
+
+                if ($this->hasService($type) || $this->hasAlias($type) ) {
+                    $serviceParameters[] = $this->getService($type) ?? $this->getAlias($type);
+                } else {
+                    $serviceParameters[] = function() use ($type) {
+                        return $this->getService($type) ?? $this->getAlias($type);
+                    };
+                }
+
+            }
+
+            $this->addService($serviceName, function () use ($serviceName, $serviceParameters) {
+                foreach ($serviceParameters as $serviceParameter) {
+                    if ($serviceParameter instanceof \Closure) {
+                        $serviceParameter = $serviceParameter();
+                    }
+                }
+
+                return new $serviceName(...$serviceParameters);
+            });
+
+        }
     }
 
 }

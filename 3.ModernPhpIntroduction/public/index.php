@@ -33,17 +33,18 @@ $container->addService('format', function() use ($container){
     return $container->getService('format.json');
 }, FormatInterface::class);
 
-$container->addService('serializer', function() use ($container){
-    return new Serializer($container->getService('format'));
-});
+// $container->addService('serializer', function() use ($container){
+//     return new Serializer($container->getService('format'));
+// });
 
-$container->addService('controller.index', function() use ($container){
-    return new IndexController($container->getService('serializer'));
-});
+// $container->addService('controller.index', function() use ($container){
+//     return new IndexController($container->getService('serializer'));
+// });
 
 $container->loadServices('App\\Service');
 $container->loadServices('App\\Controller');
 
 print("<pre>".print_r($container->getServices(), true)."</pre><br><br>");
 
-print("<pre>" . print_r($container->getService('controller.index')->index(), true) . "</pre>");
+print("<pre>" . print_r($container->getService('App\\Controller\\IndexController')->index(), true) . "</pre>");
+print("<pre>" . print_r($container->getService('App\\Controller\\PostController')->index(), true) . "</pre>");
