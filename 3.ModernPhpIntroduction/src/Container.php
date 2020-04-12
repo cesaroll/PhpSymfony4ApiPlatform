@@ -54,4 +54,21 @@ class Container {
         ];
     }
 
+    public function loadServices(string $namespace): void {
+        $baseDir = __DIR__ . '/';
+
+        $actualDirectory = str_replace('\\', '/', $namespace);
+
+        $actualDirectory = $baseDir . substr($actualDirectory, strpos($actualDirectory, '/')+1);
+
+        print("<pre>".print_r($actualDirectory, true)."</pre>");
+
+        $files = array_filter(scandir($actualDirectory), function ($file) {
+            return $file !== '.' && $file !== '..';
+        });
+
+        print("<pre>".print_r($files, true)."</pre><br>");
+
+    }
+
 }

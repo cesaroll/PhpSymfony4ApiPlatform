@@ -41,6 +41,9 @@ $container->addService('controller.index', function() use ($container){
     return new IndexController($container->getService('serializer'));
 });
 
+$container->loadServices('App\\Service');
+$container->loadServices('App\\Controller');
+
 print("<pre>".print_r($container->getServices(), true)."</pre><br><br>");
 
 print("<pre>" . print_r($container->getService('controller.index')->index(), true) . "</pre>");
