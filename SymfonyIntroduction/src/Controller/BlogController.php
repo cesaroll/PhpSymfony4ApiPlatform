@@ -36,13 +36,15 @@ class BlogController extends AbstractController {
     return new JsonResponse(
       [
         'page' => $page,
-        'data' => self::POSTS
+        'data' => array_map(function ($item) {
+          return $this->generateUrl('blog_by_slug', ['slug' => $item['slug']]);
+        }, self::POSTS)
       ]
     );
   }
 
   /**
-   * @Route("/{id}", name="blog_id", requirements={"id"="\d+"})
+   * @Route("/{id}", name="blog_by_id", requirements={"id"="\d+"})
    */
   public function post(int $id) {
     return new JsonResponse(
