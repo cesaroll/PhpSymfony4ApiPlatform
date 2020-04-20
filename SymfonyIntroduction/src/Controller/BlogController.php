@@ -30,10 +30,15 @@ class BlogController extends AbstractController {
   ];
 
   /**
-   * @Route("/", name="blog_list")
+   * @Route("/{page}", name="blog_list", defaults={"page"=5})
    */
-  public function list() {
-    return new JsonResponse(self::POSTS);
+  public function list($page = 1) {
+    return new JsonResponse(
+      [
+        'page' => $page,
+        'data' => self::POSTS
+      ]
+    );
   }
 
   /**
