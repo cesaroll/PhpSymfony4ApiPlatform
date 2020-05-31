@@ -5,6 +5,7 @@ namespace App\Controller;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -46,10 +47,14 @@ class BlogController extends AbstractController {
    *
    * @return JsonResponse
    */
-  public function list(int $page): Response {
-    return new JsonResponse(
+  public function list(int $page, Request $request): Response {
+
+    $limit = $request->get('limit', 10);
+
+    return $this->json(
         [
             'page' => $page,
+            'limit' => $limit,
             'data' => array_map(
                 function ($item) {
                   return $this->generateUrl('blog_by_slug', ['slug' => $item['slug']]);
@@ -79,7 +84,7 @@ class BlogController extends AbstractController {
 
     $this->logger->debug(print_r(self::POSTS[$key], true));
 
-    return new JsonResponse(self::POSTS[$key]);
+    return $this->json(self::POSTS[$key]);
   }
 
   /**
@@ -96,7 +101,7 @@ class BlogController extends AbstractController {
       return new Response('',Response::HTTP_NOT_FOUND);
     }
 
-    return new JsonResponse(self::POSTS[$key]);
+    return $this->json(self::POSTS[$key]);
   }
 
 }
