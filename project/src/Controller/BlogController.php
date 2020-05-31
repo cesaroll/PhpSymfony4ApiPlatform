@@ -50,7 +50,13 @@ class BlogController extends AbstractController {
     return new JsonResponse(
         [
             'page' => $page,
-            'data' => self::POSTS
+            'data' => array_map(
+                function ($item) {
+                  return $this->generateUrl('blog_by_slug', ['slug' => $item['slug']]);
+                },
+                self::POSTS
+            )
+            //'data' => self::POSTS
         ]
     );
   }
